@@ -163,7 +163,7 @@ class _LoginpageState extends State<Loginpage> {
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                 child: Text(
-                  "Forget Password?",
+                  "Forget Password?", // this is used to forget password
                   style: TextStyle(color: Colors.white),
                 )),
             const SizedBox(height: 10),
