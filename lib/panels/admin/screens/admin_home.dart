@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:mobile_vault/Login%20Details/loginpage.dart';
 import 'package:mobile_vault/panels/admin/screens/ManageProducts/manage_products.dart';
 import 'package:mobile_vault/panels/admin/screens/homepage_container/setting.dart';
-import 'package:mobile_vault/panels/admin/screens/homepage_container/userInfo.dart';
 import 'package:mobile_vault/panels/admin/screens/homepage_container/viewOrder.dart';
 import 'package:mobile_vault/panels/admin/screens/settings.dart';
 import 'package:mobile_vault/panels/admin/screens/user_info.dart';
@@ -72,7 +71,7 @@ class _AdminHomeState extends State<AdminHome> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => userInfo()),
+                  MaterialPageRoute(builder: (context) => UserDetailsPage()),
                 );
               },
             ),
@@ -130,7 +129,7 @@ class _AdminHomeState extends State<AdminHome> {
                 _buildAdminButton(Icons.people, "User Info", () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => userInfo()),
+                    MaterialPageRoute(builder: (context) => UserDetailsPage()),
                   );
                 }),
                 _buildAdminButton(Icons.settings, "Settings", () {
