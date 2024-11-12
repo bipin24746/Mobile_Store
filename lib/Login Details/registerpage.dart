@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_vault/Login%20Details/loginpage.dart';
 
@@ -27,7 +27,6 @@ class _RegisterpageState extends State<Registerpage> {
     String password = newPassword.text.trim();
     String confirmpassword = confirmPassword.text.trim();
 
-    // Validate fields
     if (name.isEmpty ||
         mobile.isEmpty ||
         email.isEmpty ||
@@ -45,15 +44,12 @@ class _RegisterpageState extends State<Registerpage> {
     try {
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: email, password: password);
-
-      // Save user role in Firestore
-      String role = "user"; // Default role
+      String role = "user";
       QuerySnapshot users =
           await FirebaseFirestore.instance.collection('users').get();
 
-      // Check if this is the first user
       if (users.docs.isEmpty) {
-        role = "admin"; // Assign admin role to the first user
+        role = "admin";
       }
 
       await FirebaseFirestore.instance
@@ -62,8 +58,8 @@ class _RegisterpageState extends State<Registerpage> {
           .set({
         'name': name,
         'email': email,
-        'mobile': mobile, // Save mobile number
-        'role': role, // Save role
+        'mobile': mobile,
+        'role': role,
       });
 
       showMessage(
@@ -71,7 +67,6 @@ class _RegisterpageState extends State<Registerpage> {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => Loginpage()));
     } on FirebaseAuthException catch (e) {
-      // Handle Firebase authentication exceptions
       if (e.code == 'weak-password') {
         showMessage('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
@@ -95,107 +90,107 @@ class _RegisterpageState extends State<Registerpage> {
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
-        title: const Text("Create Account",
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.blue,
+        title: const Text(
+          "Create Account",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.deepPurple,
       ),
       body: SingleChildScrollView(
         child: Form(
           key: registerKey,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: TextField(
-                  controller: userName,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    hintText: "Full Name",
-                    prefixIcon: const Icon(Icons.person),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: TextField(
-                  controller: mobileNum,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    hintText: "Mobile Number",
-                    prefixIcon: const Icon(Icons.call),
-                  ),
-                  keyboardType: TextInputType.phone, // Changed to phone type
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: TextField(
-                  controller: emailAddress,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    hintText: "Email ID",
-                    prefixIcon: const Icon(Icons.email),
-                  ),
-                  keyboardType: TextInputType.emailAddress, // Added email type
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: TextField(
-                  controller: newPassword,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    hintText: "Password",
-                    prefixIcon: const Icon(Icons.lock),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: TextField(
-                  controller: confirmPassword,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                    hintText: "Confirm Password",
-                    prefixIcon: const Icon(Icons.lock),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 15),
-              ElevatedButton(
-                onPressed: registerUser,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: const Text("Sign Up",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-              const SizedBox(height: 10),
-              const Text("Already Have An Account?",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 20),
+                buildTextField(userName, "Full Name", Icons.person),
+                buildTextField(mobileNum, "Mobile Number", Icons.phone,
+                    TextInputType.phone),
+                buildTextField(emailAddress, "Email ID", Icons.email,
+                    TextInputType.emailAddress),
+                buildPasswordField(newPassword, "Password"),
+                buildPasswordField(confirmPassword, "Confirm Password"),
+                const SizedBox(height: 20),
+                buildButton("Sign Up", registerUser),
+                const SizedBox(height: 15),
+                const Center(
+                    child: Text("Already Have An Account?",
+                        style: TextStyle(fontSize: 18))),
+                const SizedBox(height: 10),
+                buildButton("Login", () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => Loginpage()));
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: const Text("Login",
-                    style: TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-            ],
+                }),
+              ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildTextField(
+      TextEditingController controller, String hintText, IconData icon,
+      [TextInputType keyboardType = TextInputType.text]) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.grey[100],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          hintText: hintText,
+          prefixIcon: Icon(icon, color: Colors.deepPurple),
+        ),
+        keyboardType: keyboardType,
+      ),
+    );
+  }
+
+  Widget buildPasswordField(TextEditingController controller, String hintText) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: TextField(
+        controller: controller,
+        obscureText: true,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Colors.grey[100],
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide.none,
+          ),
+          hintText: hintText,
+          prefixIcon: const Icon(Icons.lock, color: Colors.deepPurple),
+        ),
+      ),
+    );
+  }
+
+  Widget buildButton(String text, VoidCallback onPressed) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.deepPurple,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 15),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+            color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }
