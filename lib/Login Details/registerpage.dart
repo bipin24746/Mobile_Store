@@ -35,7 +35,7 @@ class _RegisterpageState extends State<Registerpage> {
     String confirmpassword = confirmPassword.text.trim();
 
     if (password != confirmpassword) {
-      showMessage("Passwords don't match");
+      showMessage("Passwords doesn't match");
       return;
     }
 
