@@ -20,21 +20,19 @@ class _RegisterpageState extends State<Registerpage> {
   final GlobalKey<FormState> registerKey = GlobalKey<FormState>();
   final FirebaseAuth auth = FirebaseAuth.instance;
 
+  // Password visibility state
+  bool _isPasswordVisible = false;
+
   Future<void> registerUser() async {
+    if (!registerKey.currentState!.validate()) {
+      return;
+    }
+
     String name = userName.text.trim();
     String mobile = mobileNum.text.trim();
     String email = emailAddress.text.trim();
     String password = newPassword.text.trim();
     String confirmpassword = confirmPassword.text.trim();
-
-    if (name.isEmpty ||
-        mobile.isEmpty ||
-        email.isEmpty ||
-        password.isEmpty ||
-        confirmpassword.isEmpty) {
-      showMessage("Please fill in all fields.");
-      return;
-    }
 
     if (password != confirmpassword) {
       showMessage("Passwords don't match");
@@ -109,13 +107,18 @@ class _RegisterpageState extends State<Registerpage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(height: 20),
-                buildTextField(userName, "Full Name", Icons.person),
+                buildTextField(
+                  userName,
+                  "Full Name",
+                  Icons.person,
+                ),
                 buildTextField(mobileNum, "Mobile Number", Icons.phone,
-                    TextInputType.phone),
+                    TextInputType.phone, validateMobile),
                 buildTextField(emailAddress, "Email ID", Icons.email,
-                    TextInputType.emailAddress),
-                buildPasswordField(newPassword, "Password"),
-                buildPasswordField(confirmPassword, "Confirm Password"),
+                    TextInputType.emailAddress, validateEmail),
+                buildPasswordField(newPassword, "Password", validatePassword),
+                buildPasswordField(confirmPassword, "Confirm Password",
+                    validateConfirmPassword),
                 const SizedBox(height: 20),
                 buildButton("Sign Up", registerUser),
                 const SizedBox(height: 15),
@@ -137,10 +140,11 @@ class _RegisterpageState extends State<Registerpage> {
 
   Widget buildTextField(
       TextEditingController controller, String hintText, IconData icon,
-      [TextInputType keyboardType = TextInputType.text]) {
+      [TextInputType keyboardType = TextInputType.text,
+      String? Function(String?)? validator]) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
           filled: true,
@@ -153,16 +157,18 @@ class _RegisterpageState extends State<Registerpage> {
           prefixIcon: Icon(icon, color: Colors.deepPurple),
         ),
         keyboardType: keyboardType,
+        validator: validator,
       ),
     );
   }
 
-  Widget buildPasswordField(TextEditingController controller, String hintText) {
+  Widget buildPasswordField(TextEditingController controller, String hintText,
+      String? Function(String?) validator) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
-      child: TextField(
+      child: TextFormField(
         controller: controller,
-        obscureText: true,
+        obscureText: !_isPasswordVisible, // Update to use the visibility state
         decoration: InputDecoration(
           filled: true,
           fillColor: Colors.grey[100],
@@ -172,7 +178,19 @@ class _RegisterpageState extends State<Registerpage> {
           ),
           hintText: hintText,
           prefixIcon: const Icon(Icons.lock, color: Colors.deepPurple),
+          suffixIcon: IconButton(
+            icon: Icon(
+              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+              color: Colors.deepPurple,
+            ),
+            onPressed: () {
+              setState(() {
+                _isPasswordVisible = !_isPasswordVisible;
+              });
+            },
+          ),
         ),
+        validator: validator,
       ),
     );
   }
@@ -193,5 +211,42 @@ class _RegisterpageState extends State<Registerpage> {
             color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
+  }
+
+  String? validateMobile(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Mobile number is required";
+    } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+      return "Enter a valid 10-digit mobile number";
+    }
+    return null;
+  }
+
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Email is required";
+    } else if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+        .hasMatch(value)) {
+      return "Enter a valid email";
+    }
+    return null;
+  }
+
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Password is required";
+    } else if (value.length < 6) {
+      return "Password must be at least 6 characters";
+    }
+    return null;
+  }
+
+  String? validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Confirm password is required";
+    } else if (value != newPassword.text) {
+      return "Passwords do not match";
+    }
+    return null;
   }
 }
