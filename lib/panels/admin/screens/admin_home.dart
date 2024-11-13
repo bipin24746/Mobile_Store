@@ -1,10 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_vault/Login%20Details/loginpage.dart';
 import 'package:mobile_vault/panels/admin/screens/ManageProducts/manage_products.dart';
-import 'package:mobile_vault/panels/admin/screens/homepage_container/setting.dart';
-import 'package:mobile_vault/panels/admin/screens/homepage_container/viewOrder.dart';
 import 'package:mobile_vault/panels/admin/screens/settings.dart';
 import 'package:mobile_vault/panels/admin/screens/user_info.dart';
 import 'package:mobile_vault/panels/admin/screens/view_orders.dart';
@@ -34,15 +31,23 @@ class _AdminHomeState extends State<AdminHome> {
       drawer: Drawer(
         child: ListView(
           children: [
-            UserAccountsDrawerHeader(
-              accountName: const Text("Admin"),
-              accountEmail:
-                  const Text("admin@example.com"), // Replace with actual email
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Text(
-                  "A",
-                  style: TextStyle(fontSize: 24.0, color: Colors.blue),
+            Container(
+              width: MediaQuery.of(context).size.width,
+              height: 80,
+              color: Colors.blue, // Color for the remaining background
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Admin",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35,
+                        color: Colors.white, // Text color for better visibility
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -52,7 +57,7 @@ class _AdminHomeState extends State<AdminHome> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => AdminManageProducts()),
+                      builder: (context) => const AdminManageProducts()),
                 );
               },
             ),
@@ -80,7 +85,7 @@ class _AdminHomeState extends State<AdminHome> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Setting()),
+                  MaterialPageRoute(builder: (context) => const Setting()),
                 );
               },
             ),
@@ -95,10 +100,10 @@ class _AdminHomeState extends State<AdminHome> {
       ),
       body: Column(
         children: [
-          Center(
+          const Center(
             child: Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: const Text(
+              padding: EdgeInsets.only(top: 20),
+              child: Text(
                 "Welcome to Admin Page",
                 style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
@@ -116,7 +121,7 @@ class _AdminHomeState extends State<AdminHome> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => AdminManageProducts()),
+                        builder: (context) => const AdminManageProducts()),
                   );
                 }),
                 _buildAdminButton(Icons.receipt_long, "View Orders", () {
@@ -135,7 +140,7 @@ class _AdminHomeState extends State<AdminHome> {
                 _buildAdminButton(Icons.settings, "Settings", () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Setting()),
+                    MaterialPageRoute(builder: (context) => const Setting()),
                   );
                 }),
               ],
