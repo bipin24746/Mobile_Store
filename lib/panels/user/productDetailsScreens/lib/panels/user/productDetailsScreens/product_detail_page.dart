@@ -125,7 +125,13 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             categoryMatchingProducts.sort((a, b) {
               int scoreA = _calculateRelevanceScore(a);
               int scoreB = _calculateRelevanceScore(b);
-              return scoreB - scoreA;
+
+              // If scores are equal, sort alphabetically by title
+              if (scoreA == scoreB) {
+                return a['title'].compareTo(b['title']);
+              }
+
+              return scoreB - scoreA; // Higher scores first
             });
 
             return Padding(
